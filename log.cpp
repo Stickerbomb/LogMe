@@ -6,60 +6,49 @@
 
 
 log::~log() {
-    if(writeFileStream.is_open())
-        writeFileStream.close();
+//    if(filewriter.is_open())
+//        filewriter.close();
 }
 
-static logstream log(log_level level = log_level::info) {
-    static logger m_handler;
-    return logstream(m_handler, level);
-}
-
-log &operator<<(log &logger, const log::logType l_type) {
-    switch (l_type) {
-        case log::log_level::ERROR:
-            if (logger.writeFileStream.is_open()) {
-                logger.writeFileStream << time(0) << "ERROR" << logger.prefix << _threadid;
-            } else {
-                std::cout << time(0) << "ERROR; " << logger.prefix << _threadid;
-            }
-            break;
-
-        case log::log_level::WARNING:
-            if (logger.writeFileStream.is_open()) {
-                logger.writeFileStream << time(0) << "WARNING" << logger.prefix << _threadid;
-            } else {
-                std::cout << time(0) << " WARNING; " << logger.prefix << _threadid;
-            }
-            break;
-        case log::log_level::DEBUG:
-            if (logger.writeFileStream.is_open()) {
-                logger.writeFileStream << time(0) << " DEBUG; " << logger.prefix << _threadid;
-            } else {
-                std::cout << time(0) << " DEBUG; " << logger.prefix << _threadid;
-            }
-            break;
-
-        default:
-            if (logger.writeFileStream.is_open()) {
-                logger.writeFileStream << time(0) << " INFO; " << logger.prefix << _threadid;
-            } else {
-                std::cout << time(0) << " INFO; " << logger.prefix << " "<<  _threadid;
-            }
-            break;
-    } // sw
-
+log handler(log logger, log_level level = INFO) {
+    logstream logstreamer =logstream(logger,level);
     return logger;
 }
 
-log log::getLogger() {
-    return log("", "");
+log getlogger(std::string filename, std::string prefix) {
+
 }
 
-log log::getLogger(const std::string filename) {
-    return log(filename, "");
+log (*getLogger(std::string filename, std::string prefix))(log_level level){
+    log logger = log(filename,prefix);
+    return handler;
 }
 
-log log::getLogger(const std::string filename, const std::string prefix) {
-    return log(filename, prefix);
+
+
+std::string logstream::get_level_string()
+{
+    std::string temp;
+    switch(m_level) {
+        case INFO: temp = "INFO;"; break;
+        case WARNING: temp = "WARNING;"; break;
+        case DEBUG: temp = "DEBUG;"; break;
+        case ERROR: temp = "ERROR;"; break;
+    }
+    return temp;
+}
+
+std::string logstream::get_time_string()
+{
+    std::time_t t = std::time(nullptr);
+#ifdef _WIN32
+    std::tm time;
+    localtime_s(&time, &t);
+#else
+    std::tm time = *std::localtime(&t);
+#endif
+    char t_str[20];
+    std::strftime(t_str, sizeof(t_str), "%T", &time);
+
+    return ("[" + std::string(t_str) + "]");
 }
