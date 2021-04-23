@@ -58,6 +58,8 @@ namespace logme {
     public:
         static std::function<const ConsoleLogger &(LogLevel)> getLoggerFunc;
 
+        friend ConsoleLogger& operator << (ConsoleLogger logger, const char[]);
+
     public:
         explicit ConsoleLogger(LogLevel level);
 
