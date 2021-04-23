@@ -1,5 +1,5 @@
 #include <thread>
-#include "log.h"
+#include "logger.h"
 
 /*
 Example of console output:
